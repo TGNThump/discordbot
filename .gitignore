@@ -1,0 +1,9 @@
+/target/
+/config/
+
+.classpath
+.settings
+.project
+/.apt_generated/
+
+buildNumber.properties
