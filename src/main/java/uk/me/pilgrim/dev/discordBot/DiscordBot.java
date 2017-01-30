@@ -56,6 +56,7 @@ public class DiscordBot extends Project {
 		try {
 			client = new ClientBuilder().withToken(config.apiKey).login();
 			bind(IDiscordClient.class).toInstance(client);
+			bind(MainConfig.class).toInstance(config);
 		} catch (DiscordException e) {
 			e.printStackTrace();
 		}
