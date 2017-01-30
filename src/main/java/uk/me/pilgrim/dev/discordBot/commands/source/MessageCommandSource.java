@@ -4,7 +4,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-package uk.me.pilgrim.dev.discordBot;
+package uk.me.pilgrim.dev.discordBot.commands.source;
 
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.util.DiscordException;
@@ -39,7 +39,7 @@ public class MessageCommandSource implements CommandSource {
 	@Override
 	public void sendMessage(String of) {
 		try {
-			event.getMessage().reply("```" + of + "```");
+			event.getMessage().getChannel().sendMessage(of);
 			TerraLogger.info(of);
 		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
 			e.printStackTrace();

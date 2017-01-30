@@ -14,12 +14,17 @@ import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.util.DiscordException;
 import uk.me.pilgrim.dev.core.commands.MethodCommandService;
+import uk.me.pilgrim.dev.core.events.ConfigurationReloadEvent;
 import uk.me.pilgrim.dev.core.events.InitEvent;
 import uk.me.pilgrim.dev.core.foundation.Project;
+import uk.me.pilgrim.dev.discordBot.blacklist.BlacklistCommands;
+import uk.me.pilgrim.dev.discordBot.blacklist.BlacklistListener;
 import uk.me.pilgrim.dev.discordBot.commands.TestCommand;
 import uk.me.pilgrim.dev.discordBot.commands.arguments.IChannelArgument;
 import uk.me.pilgrim.dev.discordBot.commands.arguments.IUserArgument;
+import uk.me.pilgrim.dev.discordBot.config.Lang;
 import uk.me.pilgrim.dev.discordBot.config.MainConfig;
+import uk.me.pilgrim.dev.discordBot.listeners.CommandListener;
 import uk.me.pilgrim.dev.discordBot.listeners.MessageListener;
 import uk.me.pilgrim.dev.discordBot.listeners.ReadyListener;
 
@@ -29,6 +34,7 @@ import uk.me.pilgrim.dev.discordBot.listeners.ReadyListener;
 public class DiscordBot extends Project {
 	
 	private MainConfig config;
+	private Lang lang;
 	private IDiscordClient client;
 	
 	@Inject
@@ -40,15 +46,25 @@ public class DiscordBot extends Project {
 	public DiscordBot() {
 		super(PomData.GROUP_ID, PomData.ARTIFACT_ID, PomData.NAME, PomData.VERSION);
 		config = new MainConfig();
+		lang = new Lang();
 	}
 	
 	@Subscribe
 	public void onInit(InitEvent event){
 		events.register(new ReadyListener());
-		events.register(new MessageListener(commandService));
+		events.register(new CommandListener(commandService));
+		events.register(new MessageListener());
+		events.register(new BlacklistListener());
 		commandService.addArgumentParser(new IUserArgument());
 		commandService.addArgumentParser(new IChannelArgument());
 		commandService.registerCommands(new TestCommand());
+		commandService.registerCommands(new BlacklistCommands());
+	}
+	
+	@Subscribe
+	public void onConfigReload(ConfigurationReloadEvent event){
+		config.reload();
+		lang.reload();
 	}
 	
 	@Override
@@ -57,6 +73,7 @@ public class DiscordBot extends Project {
 			client = new ClientBuilder().withToken(config.apiKey).login();
 			bind(IDiscordClient.class).toInstance(client);
 			bind(MainConfig.class).toInstance(config);
+			bind(Lang.class).toInstance(lang);
 		} catch (DiscordException e) {
 			e.printStackTrace();
 		}

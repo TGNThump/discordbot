@@ -6,35 +6,24 @@
  */
 package uk.me.pilgrim.dev.discordBot.config;
 
-import java.util.List;
-
-import com.google.common.collect.Lists;
-
 import ninja.leaping.configurate.objectmapping.Setting;
 import uk.me.pilgrim.dev.core.config.Config;
 
 /**
  * @author Benjamin Pilgrim &lt;ben@pilgrim.me.uk&gt;
  */
-public class MainConfig extends Config{
+public class Lang extends Config {
 
-	public MainConfig(){
-		super("config.conf");
+	public Lang(){
+		super("lang.conf");
 	}
 	
-	/* (non-Javadoc)
-	 * @see uk.me.pilgrim.dev.core.config.Config#setDefaults()
-	 */
 	@Override
 	public void setDefaults() {
-		apiKey = setDefault(apiKey, "");
-		wordBlacklist = setDefault(wordBlacklist, Lists.newArrayList());
+		blacklist_message_deleted = setDefault(blacklist_message_deleted, "Your message in **#%s** was deleted because it contained the banned word%s %s. \n```%s```");
 	}
 	
 	@Setting
-	public String apiKey;
-	
-	@Setting
-	public List<String> wordBlacklist;
+	public String blacklist_message_deleted;
 	
 }
