@@ -6,12 +6,12 @@
  */
 package uk.me.pilgrim.dev.discordBot.commands.source;
 
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 import uk.me.pilgrim.dev.core.commands.sources.CommandSource;
 import uk.me.pilgrim.dev.core.util.logger.TerraLogger;
+import uk.me.pilgrim.dev.discordBot.events.MessageEvent;
 
 
 /**
@@ -19,9 +19,9 @@ import uk.me.pilgrim.dev.core.util.logger.TerraLogger;
  */
 public class MessageCommandSource implements CommandSource {
 	
-	private MessageReceivedEvent event;
+	private MessageEvent event;
 	
-	public MessageCommandSource(MessageReceivedEvent event){
+	public MessageCommandSource(MessageEvent event){
 		this.event = event;
 	}
 	

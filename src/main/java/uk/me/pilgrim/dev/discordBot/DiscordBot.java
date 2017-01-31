@@ -9,6 +9,7 @@ package uk.me.pilgrim.dev.discordBot;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
@@ -29,6 +30,7 @@ import uk.me.pilgrim.dev.discordBot.listeners.CommandListener;
 import uk.me.pilgrim.dev.discordBot.listeners.ExceptionListener;
 import uk.me.pilgrim.dev.discordBot.listeners.MessageListener;
 import uk.me.pilgrim.dev.discordBot.listeners.ReadyListener;
+import uk.me.pilgrim.dev.discordBot.models.Guild;
 
 /**
  * @author Benjamin Pilgrim &lt;ben@pilgrim.me.uk&gt;
@@ -38,7 +40,7 @@ public class DiscordBot extends Project {
 	private MainConfig config;
 	private Lang lang;
 	private IDiscordClient client;
-	
+		
 	@Inject
 	private CommandService commands;
 	
@@ -52,10 +54,10 @@ public class DiscordBot extends Project {
 	}
 	
 	@Subscribe
-	public void onInit(InitEvent event){
+	public void onInit(InitEvent event){		
 		events.register(new ReadyListener());
 		events.register(new ExceptionListener());
-		events.register(new CommandListener(commands));
+		events.register(new CommandListener());
 		events.register(new MessageListener());
 		events.register(new BlacklistListener());
 		commands.addArgumentParser(new IUserArgument());
@@ -81,7 +83,8 @@ public class DiscordBot extends Project {
 			e.printStackTrace();
 		}
 		
+		install(new FactoryModuleBuilder().build(Guild.Factory.class));
+		
 		registerChild(new DiscordEvents());
 	}
-	
 }

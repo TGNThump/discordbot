@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
@@ -23,8 +24,8 @@ import sx.blah.discord.util.RateLimitException;
 import uk.me.pilgrim.dev.core.Core;
 import uk.me.pilgrim.dev.core.util.text.Text;
 import uk.me.pilgrim.dev.discordBot.config.Lang;
-import uk.me.pilgrim.dev.discordBot.config.MainConfig;
 import uk.me.pilgrim.dev.discordBot.events.MessageBlacklistedEvent;
+import uk.me.pilgrim.dev.discordBot.models.Guild;
 
 /**
  * @author Benjamin Pilgrim &lt;ben@pilgrim.me.uk&gt;
@@ -33,6 +34,13 @@ public class BlacklistListener {
 	
 	@Inject
 	Lang lang;
+	
+	@Inject
+	IDiscordClient client;
+	
+	@Inject
+	Guild.Registry guildRegistry;
+
 	
 	@Subscribe
 	public void onBlacklistMessageEvent(MessageBlacklistedEvent event){
@@ -57,10 +65,13 @@ public class BlacklistListener {
 	
 			if (author.isBot()) return;
 			if (channel.isPrivate()) return;
+			if (text.startsWith("<@" + client.getOurUser().getID() + ">") || text.startsWith("<@!" + client.getOurUser().getID() + ">") || channel.isPrivate()) return;
 			
 			List<String> caughtWords = Lists.newArrayList();
-						
-			Core.get(MainConfig.class).wordBlacklist.forEach((word) -> {
+			
+			Guild guild = guildRegistry.get(channel.getGuild());
+			
+			guild.getBlacklist().forEach((word) -> {
 				String lower = text.toLowerCase();
 				if (lower.startsWith(word + " ") || lower.contains(" " + word + " ") || lower.endsWith(" " + word) || lower.equals(word)){
 					caughtWords.add(word);

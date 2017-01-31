@@ -1,6 +1,6 @@
 /target/
 /config/
-
+/data/
 .classpath
 .settings
 .project

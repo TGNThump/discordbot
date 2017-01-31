@@ -44,8 +44,6 @@ public class DiscordEvents extends GuiceModule{
 	@EventSubscriber
 	public void onMessageReceivedEvent(MessageReceivedEvent event){
 		events.post(event);
+		events.post(new uk.me.pilgrim.dev.discordBot.events.MessageReceivedEvent(event.getMessage()));
 	}
-
-
-	
 }

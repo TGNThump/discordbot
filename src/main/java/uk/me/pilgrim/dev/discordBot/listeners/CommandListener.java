@@ -6,43 +6,41 @@
  */
 package uk.me.pilgrim.dev.discordBot.listeners;
 
+import javax.inject.Inject;
+
 import com.google.common.eventbus.Subscribe;
 
 import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import uk.me.pilgrim.dev.core.commands.CommandService;
-import uk.me.pilgrim.dev.core.commands.exceptions.CommandException;
 import uk.me.pilgrim.dev.core.commands.sources.CommandSource;
 import uk.me.pilgrim.dev.core.util.Context;
 import uk.me.pilgrim.dev.discordBot.commands.source.MessageCommandSource;
+import uk.me.pilgrim.dev.discordBot.events.MessageReceivedEvent;
 
 /**
  * @author Benjamin Pilgrim &lt;ben@pilgrim.me.uk&gt;
  */
 public class CommandListener {
 	
-	CommandService commandService;
+	@Inject
+	IDiscordClient client;
 	
-	public CommandListener(CommandService commandService){
-		this.commandService = commandService;
-	}
+	@Inject
+	CommandService commandService;
 	
 	@Subscribe
 	public void onMessageReceivedEvent(MessageReceivedEvent event) throws Throwable{
-		IDiscordClient client = event.getClient();
 		IMessage message = event.getMessage();
-		IUser author = message.getAuthor();
-		IGuild guild = message.getGuild();
-		IChannel channel = message.getChannel();
-		String text = event.getMessage().getContent();
+		IUser author = event.getAuthor();
+		IGuild guild = event.getGuild();
+		IChannel channel = event.getChannel();
+		String text = event.getContent();
 
 		if (author.isBot()) return;
-
-		text = event.getMessage().getContent();
 		
 		if (text.startsWith("<@" + client.getOurUser().getID() + ">") || text.startsWith("<@!" + client.getOurUser().getID() + ">") || channel.isPrivate()){
 			if (!channel.isPrivate()) text = text.substring(text.indexOf(">")+1);

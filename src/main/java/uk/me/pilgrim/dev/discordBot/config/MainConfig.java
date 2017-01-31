@@ -6,10 +6,6 @@
  */
 package uk.me.pilgrim.dev.discordBot.config;
 
-import java.util.List;
-
-import com.google.common.collect.Lists;
-
 import ninja.leaping.configurate.objectmapping.Setting;
 import uk.me.pilgrim.dev.core.config.Config;
 
@@ -28,13 +24,9 @@ public class MainConfig extends Config{
 	@Override
 	public void setDefaults() {
 		apiKey = setDefault(apiKey, "");
-		wordBlacklist = setDefault(wordBlacklist, Lists.newArrayList());
 	}
 	
 	@Setting
 	public String apiKey;
-	
-	@Setting
-	public List<String> wordBlacklist;
 	
 }
