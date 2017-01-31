@@ -6,11 +6,12 @@
  */
 package uk.me.pilgrim.dev.discordBot.blacklist;
 
+import javax.inject.Inject;
+
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
-import uk.me.pilgrim.dev.core.Core;
 import uk.me.pilgrim.dev.core.commands.CommandResult;
 import uk.me.pilgrim.dev.core.commands.annotations.Command;
 import uk.me.pilgrim.dev.core.util.Context;
@@ -22,11 +23,14 @@ import uk.me.pilgrim.dev.discordBot.config.MainConfig;
  */
 public class BlacklistCommands {
 	
+	@Inject
+	private MainConfig config;
+	
 	@Command("blacklist")
 	public CommandResult onBlacklist(Context context) throws MissingPermissionsException, RateLimitException, DiscordException{
 		String message = "Blacklist: ";
 		
-		message += "`" + Text.implodeCommaAnd(Core.get(MainConfig.class).wordBlacklist, "`, `","` and `") + "`";
+		message += "`" + Text.implodeCommaAnd(config.wordBlacklist, "`, `","` and `") + "`";
 		
 		context.get(IChannel.class).sendMessage(message);
 		return CommandResult.SUCCESS;
@@ -34,7 +38,6 @@ public class BlacklistCommands {
 	
 	@Command("blacklist add")
 	public CommandResult onBlacklistAdd(Context context, String word) throws MissingPermissionsException, RateLimitException, DiscordException{
-		MainConfig config = Core.get(MainConfig.class);
 		config.wordBlacklist.add(word.toLowerCase());
 		config.save();
 		context.get(IChannel.class).sendMessage("Added `" + word + "` to blacklist.");
@@ -43,7 +46,6 @@ public class BlacklistCommands {
 	
 	@Command("blacklist remove")
 	public CommandResult onBlacklistRemove(Context context, String word) throws MissingPermissionsException, RateLimitException, DiscordException{
-		MainConfig config = Core.get(MainConfig.class);
 		config.wordBlacklist.remove(word.toLowerCase());
 		config.save();
 		context.get(IChannel.class).sendMessage("Removed `" + word + "` from blacklist.");

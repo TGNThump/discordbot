@@ -39,6 +39,10 @@ public class MessageCommandSource implements CommandSource {
 	@Override
 	public void sendMessage(String of) {
 		try {
+			boolean block = of.endsWith("```");
+			if (of.length() > 1900)
+				of = of.substring(0, 1900);
+				if (block) of += "```";
 			event.getMessage().getChannel().sendMessage(of);
 			TerraLogger.info(of);
 		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {

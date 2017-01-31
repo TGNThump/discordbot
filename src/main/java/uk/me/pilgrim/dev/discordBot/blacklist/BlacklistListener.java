@@ -8,6 +8,8 @@ package uk.me.pilgrim.dev.discordBot.blacklist;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 
@@ -22,11 +24,28 @@ import uk.me.pilgrim.dev.core.Core;
 import uk.me.pilgrim.dev.core.util.text.Text;
 import uk.me.pilgrim.dev.discordBot.config.Lang;
 import uk.me.pilgrim.dev.discordBot.config.MainConfig;
+import uk.me.pilgrim.dev.discordBot.events.MessageBlacklistedEvent;
 
 /**
  * @author Benjamin Pilgrim &lt;ben@pilgrim.me.uk&gt;
  */
 public class BlacklistListener {
+	
+	@Inject
+	Lang lang;
+	
+	@Subscribe
+	public void onBlacklistMessageEvent(MessageBlacklistedEvent event){
+		try {	
+			String words = "`" + Text.implodeCommaAnd(event.getWords(), "`, `","` and `") + "`";
+			String response = String.format(lang.blacklist_message_deleted, event.getChannel().getName(), event.getWords().size() > 1 ? "s" : "", words, event.getMessage().getContent());
+			
+			event.getMessage().delete();
+			event.getAuthor().getOrCreatePMChannel().sendMessage(response);
+		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	@Subscribe
 	public void onMessageReceivedEvent(MessageReceivedEvent event){
@@ -40,9 +59,7 @@ public class BlacklistListener {
 			if (channel.isPrivate()) return;
 			
 			List<String> caughtWords = Lists.newArrayList();
-			
-			Lang lang = Core.get(Lang.class);
-			
+						
 			Core.get(MainConfig.class).wordBlacklist.forEach((word) -> {
 				String lower = text.toLowerCase();
 				if (lower.startsWith(word + " ") || lower.contains(" " + word + " ") || lower.endsWith(" " + word) || lower.equals(word)){
@@ -51,15 +68,7 @@ public class BlacklistListener {
 			});
 			
 			if (!caughtWords.isEmpty()){
-				try {
-					message.delete();
-					String words = "`" + Text.implodeCommaAnd(caughtWords, "`, `","` and `") + "`";
-					String response = String.format(lang.blacklist_message_deleted, channel.getName(), caughtWords.size() > 1 ? "s" : "", words, message);
-					
-					author.getOrCreatePMChannel().sendMessage(response);
-				} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
-					e.printStackTrace();
-				}
+				Core.Events.fire(new MessageBlacklistedEvent(message, caughtWords));
 			}
 		} catch (Exception e) {
 			try {

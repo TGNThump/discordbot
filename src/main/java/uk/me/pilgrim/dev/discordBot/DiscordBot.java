@@ -13,7 +13,8 @@ import com.google.inject.Inject;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.util.DiscordException;
-import uk.me.pilgrim.dev.core.commands.MethodCommandService;
+import uk.me.pilgrim.dev.core.Core;
+import uk.me.pilgrim.dev.core.commands.CommandService;
 import uk.me.pilgrim.dev.core.events.ConfigurationReloadEvent;
 import uk.me.pilgrim.dev.core.events.InitEvent;
 import uk.me.pilgrim.dev.core.foundation.Project;
@@ -25,6 +26,7 @@ import uk.me.pilgrim.dev.discordBot.commands.arguments.IUserArgument;
 import uk.me.pilgrim.dev.discordBot.config.Lang;
 import uk.me.pilgrim.dev.discordBot.config.MainConfig;
 import uk.me.pilgrim.dev.discordBot.listeners.CommandListener;
+import uk.me.pilgrim.dev.discordBot.listeners.ExceptionListener;
 import uk.me.pilgrim.dev.discordBot.listeners.MessageListener;
 import uk.me.pilgrim.dev.discordBot.listeners.ReadyListener;
 
@@ -38,7 +40,7 @@ public class DiscordBot extends Project {
 	private IDiscordClient client;
 	
 	@Inject
-	private MethodCommandService commandService;
+	private CommandService commands;
 	
 	@Inject
 	private EventBus events;
@@ -52,13 +54,14 @@ public class DiscordBot extends Project {
 	@Subscribe
 	public void onInit(InitEvent event){
 		events.register(new ReadyListener());
-		events.register(new CommandListener(commandService));
+		events.register(new ExceptionListener());
+		events.register(new CommandListener(commands));
 		events.register(new MessageListener());
 		events.register(new BlacklistListener());
-		commandService.addArgumentParser(new IUserArgument());
-		commandService.addArgumentParser(new IChannelArgument());
-		commandService.registerCommands(new TestCommand());
-		commandService.registerCommands(new BlacklistCommands());
+		commands.addArgumentParser(new IUserArgument());
+		commands.addArgumentParser(new IChannelArgument());
+		commands.register(Core.inject(new TestCommand()));
+		commands.register(Core.inject(new BlacklistCommands()));
 	}
 	
 	@Subscribe
