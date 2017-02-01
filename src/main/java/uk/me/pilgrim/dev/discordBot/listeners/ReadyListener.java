@@ -24,7 +24,6 @@ public class ReadyListener {
 		event.getClient().getGuilds().forEach(guild -> {
 			TerraLogger.info(" - " + guild.getName());
 		});
-		TerraLogger.blank();
 	}
 	
 }

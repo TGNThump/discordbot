@@ -38,9 +38,9 @@ public class MessageListener {
 		}
 		
 		if (channel.isPrivate()){
-			TerraLogger.clear("<l><PM><"+ channel.getName() +"><r> " + text.replaceAll("%", "%%"));
+			TerraLogger.info("<<l>PM<r>><<l>"+ channel.getName() +"<r>> " + text.replaceAll("%", "%%"));
 		} else {
-			TerraLogger.clear("<l><"+ guild.getName() +"><#"+ channel.getName() +"><" + author.getNicknameForGuild(guild).orElse(author.getName()) + "><r> " + text.replaceAll("%", "%%"));
+			TerraLogger.info("<<l>"+ guild.getName() +"<r>><<l>#"+ channel.getName() +"<r>><<l>" + author.getNicknameForGuild(guild).orElse(author.getName()) + "<r>> " + text.replaceAll("%", "%%"));
 		}
 	}
 }

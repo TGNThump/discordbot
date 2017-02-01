@@ -11,14 +11,19 @@ import uk.me.pilgrim.dev.core.config.Config;
 @ConfigSerializable
 public class Channel extends Config.Category{
 
-	private final IChannel channel;
+	private IChannel channel;
 	
 	@Setting
 	String name;
 	
+	public Channel(){
+		
+	}
+	
 	@Inject
 	public Channel(@Assisted IChannel channel){
 		this.channel = channel;
+		this.name = channel.getName();
 	}
 	
 	public IChannel getDiscordChannel(){

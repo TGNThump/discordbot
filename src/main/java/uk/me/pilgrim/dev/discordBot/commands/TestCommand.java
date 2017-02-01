@@ -9,6 +9,8 @@ package uk.me.pilgrim.dev.discordBot.commands;
 import java.util.List;
 import java.util.Optional;
 
+import javax.inject.Inject;
+
 import com.google.common.collect.Lists;
 
 import sx.blah.discord.handle.obj.IChannel;
@@ -23,13 +25,23 @@ import uk.me.pilgrim.dev.core.commands.annotations.Command;
 import uk.me.pilgrim.dev.core.commands.annotations.Desc;
 import uk.me.pilgrim.dev.core.commands.sources.CommandSource;
 import uk.me.pilgrim.dev.core.util.Context;
+import uk.me.pilgrim.dev.discordBot.models.Channel;
+import uk.me.pilgrim.dev.discordBot.models.Guild;
 
 /**
  * @author Benjamin Pilgrim &lt;ben@pilgrim.me.uk&gt;
  */
 public class TestCommand {
 	
-
+	@Inject
+	Guild.Registry guildRegistry;
+	
+	@Command("say")
+	public CommandResult onSay(Context context, IChannel channel, String string) throws MissingPermissionsException, RateLimitException, DiscordException{
+		channel.sendMessage(string);
+		return CommandResult.SUCCESS;
+	}
+	
 	@Command("poke")
 	public CommandResult onPoke(Context context, IUser user){		
 		context.get(CommandSource.class).sendMessage("*pokes " + user.mention() + "*");
@@ -84,6 +96,11 @@ public class TestCommand {
 	@Desc("Test Command.")
 	public CommandResult onTest2(Context context, IChannel channel){
 		context.get(CommandSource.class).sendMessage(channel.getName());
+		
+		Channel c = guildRegistry.get(channel.getGuild()).getChannel(channel);
+		
+		context.get(CommandSource.class).sendMessage(c.toString());
+		
 		return CommandResult.SUCCESS;
 	}
 	

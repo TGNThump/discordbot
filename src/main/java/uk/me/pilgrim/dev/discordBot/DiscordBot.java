@@ -30,6 +30,7 @@ import uk.me.pilgrim.dev.discordBot.listeners.CommandListener;
 import uk.me.pilgrim.dev.discordBot.listeners.ExceptionListener;
 import uk.me.pilgrim.dev.discordBot.listeners.MessageListener;
 import uk.me.pilgrim.dev.discordBot.listeners.ReadyListener;
+import uk.me.pilgrim.dev.discordBot.models.Channel;
 import uk.me.pilgrim.dev.discordBot.models.Guild;
 
 /**
@@ -51,6 +52,7 @@ public class DiscordBot extends Project {
 		super(PomData.GROUP_ID, PomData.ARTIFACT_ID, PomData.NAME, PomData.VERSION);
 		config = new MainConfig();
 		lang = new Lang();
+		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "WARN");
 	}
 	
 	@Subscribe
@@ -84,6 +86,8 @@ public class DiscordBot extends Project {
 		}
 		
 		install(new FactoryModuleBuilder().build(Guild.Factory.class));
+		install(new FactoryModuleBuilder().build(Channel.Factory.class));
+
 		
 		registerChild(new DiscordEvents());
 	}
