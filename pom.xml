@@ -11,7 +11,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	
+
 	<prerequisites>
 		<maven>3.0.3</maven>
 	</prerequisites>
@@ -260,6 +260,10 @@
 	</build>
 
 	<repositories>
+		<repository> <!-- This repo fixes issues with transitive dependencies -->
+			<id>jcenter</id>
+			<url>http://jcenter.bintray.com</url>
+		</repository>
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>

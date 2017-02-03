@@ -14,11 +14,13 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 
 import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 import uk.me.pilgrim.dev.core.Core;
@@ -48,8 +50,13 @@ public class BlacklistListener {
 			String words = "`" + Text.implodeCommaAnd(event.getWords(), "`, `","` and `") + "`";
 			String response = String.format(lang.blacklist_message_deleted, event.getChannel().getName(), event.getWords().size() > 1 ? "s" : "", words, event.getMessage().getContent());
 			
+			EmbedObject embed = new EmbedBuilder()
+					.withColor(137, 204, 240)
+					.withDescription(response)
+					.build();
+			
 			event.getMessage().delete();
-			event.getAuthor().getOrCreatePMChannel().sendMessage(response);
+			event.getAuthor().getOrCreatePMChannel().sendMessage("", embed, true);
 		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
 			e.printStackTrace();
 		}

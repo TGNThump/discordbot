@@ -6,7 +6,9 @@
  */
 package uk.me.pilgrim.dev.discordBot.commands.source;
 
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 import uk.me.pilgrim.dev.core.commands.sources.CommandSource;
@@ -42,8 +44,14 @@ public class MessageCommandSource implements CommandSource {
 			boolean block = of.endsWith("```");
 			if (of.length() > 1900)
 				of = of.substring(0, 1900);
-				if (block) of += "```";
-			event.getMessage().getChannel().sendMessage(of);
+			if (block) of += "```";
+
+			EmbedObject embed = new EmbedBuilder()
+				.withColor(137, 204, 240)
+				.withDescription(of)
+				.build();
+			event.getMessage().getChannel().sendMessage("", embed, true);
+
 			TerraLogger.info(of);
 		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
 			e.printStackTrace();

@@ -21,8 +21,12 @@ import uk.me.pilgrim.dev.core.events.InitEvent;
 import uk.me.pilgrim.dev.core.foundation.Project;
 import uk.me.pilgrim.dev.discordBot.blacklist.BlacklistCommands;
 import uk.me.pilgrim.dev.discordBot.blacklist.BlacklistListener;
+import uk.me.pilgrim.dev.discordBot.commands.MessageCommands;
+import uk.me.pilgrim.dev.discordBot.commands.RoleCommands;
 import uk.me.pilgrim.dev.discordBot.commands.TestCommand;
 import uk.me.pilgrim.dev.discordBot.commands.arguments.IChannelArgument;
+import uk.me.pilgrim.dev.discordBot.commands.arguments.IMessageArgument;
+import uk.me.pilgrim.dev.discordBot.commands.arguments.IRoleArgument;
 import uk.me.pilgrim.dev.discordBot.commands.arguments.IUserArgument;
 import uk.me.pilgrim.dev.discordBot.config.Lang;
 import uk.me.pilgrim.dev.discordBot.config.MainConfig;
@@ -64,8 +68,12 @@ public class DiscordBot extends Project {
 		events.register(new BlacklistListener());
 		commands.addArgumentParser(new IUserArgument());
 		commands.addArgumentParser(new IChannelArgument());
+		commands.addArgumentParser(new IMessageArgument());
+		commands.addArgumentParser(new IRoleArgument());
 		commands.register(Core.inject(new TestCommand()));
 		commands.register(Core.inject(new BlacklistCommands()));
+		commands.register(Core.inject(new MessageCommands()));
+		commands.register(Core.inject(new RoleCommands()));
 	}
 	
 	@Subscribe

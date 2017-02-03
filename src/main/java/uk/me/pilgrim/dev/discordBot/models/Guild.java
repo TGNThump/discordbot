@@ -28,6 +28,9 @@ public class Guild extends Config {
 	List<String> blacklist;
 	
 	@Setting
+	List<String> assignableRoles;
+	
+	@Setting
 	HashMap<String, Channel> channels;
 	
 	public Guild(){
@@ -45,6 +48,7 @@ public class Guild extends Config {
 	public void setDefaults() {
 		blacklist = setDefault(blacklist, Lists.newArrayList());
 		channels = setDefault(channels, new HashMap<>());
+		assignableRoles = setDefault(assignableRoles, Lists.newArrayList());
 	}
 	
 	public Channel getChannel(IChannel channel){ 
@@ -62,6 +66,10 @@ public class Guild extends Config {
 	
 	public List<String> getBlacklist(){
 		return blacklist;
+	}
+	
+	public List<String> getAssignableRoles(){
+		return assignableRoles;
 	}
 	
 	@Subscribe
