@@ -26,11 +26,11 @@ import sx.blah.discord.util.RateLimitException;
 import uk.me.pilgrim.dev.core.commands.CommandResult;
 import uk.me.pilgrim.dev.core.commands.annotations.Command;
 import uk.me.pilgrim.dev.core.commands.annotations.Desc;
-import uk.me.pilgrim.dev.core.commands.sources.CommandSource;
 import uk.me.pilgrim.dev.core.util.Context;
 import uk.me.pilgrim.dev.discordBot.PomData;
 import uk.me.pilgrim.dev.discordBot.models.Channel;
 import uk.me.pilgrim.dev.discordBot.models.Guild;
+import uk.me.pilgrim.dev.discordBot.models.User;
 
 /**
  * @author Benjamin Pilgrim &lt;ben@pilgrim.me.uk&gt;
@@ -40,15 +40,18 @@ public class TestCommand {
 	@Inject
 	Guild.Registry guildRegistry;
 	
+	@Inject
+	Channel.Registry channelRegistry;
+	
 	@Command("poke")
 	public CommandResult onPoke(Context context, IUser user) throws RateLimitException, DiscordException, MissingPermissionsException{	
-		context.get(CommandSource.class).sendMessage("*pokes " + user.mention() + "*");
+		context.get(Channel.class).info("*pokes " + user.mention() + "*");
 		return CommandResult.SUCCESS;
 	}
 	
 	@Command("❤")
 	public CommandResult onHeart(Context context) throws MissingPermissionsException, RateLimitException, DiscordException{
-		context.get(IChannel.class).sendMessage("❤");
+		context.get(Channel.class).info("❤");
 		return CommandResult.SUCCESS;
 	}
 	
@@ -58,6 +61,7 @@ public class TestCommand {
 		List<IMessage> messages = Lists.newArrayList();
 		
 		channel.getMessages().forEach((message) -> {
+			if (message.isDeleted()) return;
 			if (message.getAuthor().isBot()){ messages.add(message); return;}
 			message.getMentions().forEach((user) -> {
 				if (user.isBot()){ messages.add(message); return;}
@@ -102,19 +106,15 @@ public class TestCommand {
 	
 	@Command("test")
 	@Desc("Test Command.")
-	public CommandResult onTest(Context context, IUser user){		
-		context.get(CommandSource.class).sendMessage(user.getName());
+	public CommandResult onTest(Context context, User user) throws RateLimitException, DiscordException, MissingPermissionsException{		
+		context.get(Channel.class).info(user.getName());
 		return CommandResult.SUCCESS;
 	}
 	
 	@Command("test")
 	@Desc("Test Command.")
-	public CommandResult onTest2(Context context, IChannel channel){
-		context.get(CommandSource.class).sendMessage(channel.getName());
-		
-		Channel c = guildRegistry.get(channel.getGuild()).getChannel(channel);
-		
-		context.get(CommandSource.class).sendMessage(c.toString());
+	public CommandResult onTest2(Context context, Channel channel) throws RateLimitException, DiscordException, MissingPermissionsException{
+		context.get(Channel.class).info(channel.toString());
 		
 		return CommandResult.SUCCESS;
 	}

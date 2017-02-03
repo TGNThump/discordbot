@@ -24,9 +24,13 @@ public class MainConfig extends Config{
 	@Override
 	public void setDefaults() {
 		apiKey = setDefault(apiKey, "");
+		adminId = setDefault(adminId, "");
 	}
 	
 	@Setting
 	public String apiKey;
+	
+	@Setting
+	public String adminId;
 	
 }

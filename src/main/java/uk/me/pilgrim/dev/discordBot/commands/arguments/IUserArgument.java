@@ -6,23 +6,30 @@
  */
 package uk.me.pilgrim.dev.discordBot.commands.arguments;
 
+import javax.inject.Inject;
+
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IUser;
 import uk.me.pilgrim.dev.core.Core;
 import uk.me.pilgrim.dev.core.commands.arguments.ArgumentParser;
 import uk.me.pilgrim.dev.core.commands.exceptions.ArgumentException;
+import uk.me.pilgrim.dev.discordBot.models.User;
 
 /**
  * @author Benjamin Pilgrim &lt;ben@pilgrim.me.uk&gt;
  */
 public class IUserArgument implements ArgumentParser{
 
+	@Inject
+	User.Registry userRegistry;
+	
 	/* (non-Javadoc)
 	 * @see uk.me.pilgrim.dev.core.commands.arguments.ArgumentParser#isTypeSupported(java.lang.Class)
 	 */
 	@Override
 	public boolean isTypeSupported(Class<?> type) {
-		return type == IUser.class;
+		return type == IUser.class
+				|| type == User.class;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -35,7 +42,12 @@ public class IUserArgument implements ArgumentParser{
 		if (value.startsWith("!")) value = value.substring(1);
 		
 		IUser user = Core.get(IDiscordClient.class).getUserByID(value);
-		if (user != null) return (T) user;
+		if (user != null){
+			if (type.isAssignableFrom(User.class)){
+				return (T) userRegistry.get(user);
+			}
+			return (T) user;
+		}
 		
 		throw getArgumentException(type, arg);
 	}

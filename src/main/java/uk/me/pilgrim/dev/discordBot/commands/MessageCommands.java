@@ -1,7 +1,6 @@
 package uk.me.pilgrim.dev.discordBot.commands;
 
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IEmbed;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.DiscordException;
@@ -10,8 +9,8 @@ import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 import uk.me.pilgrim.dev.core.commands.CommandResult;
 import uk.me.pilgrim.dev.core.commands.annotations.Command;
-import uk.me.pilgrim.dev.core.commands.sources.CommandSource;
 import uk.me.pilgrim.dev.core.util.Context;
+import uk.me.pilgrim.dev.discordBot.models.Channel;
 
 public class MessageCommands {
 	
@@ -21,23 +20,20 @@ public class MessageCommands {
 	}
 	
 	@Command("message say")
-	public CommandResult onMessageSay(Context context, IChannel channel, String content) throws RateLimitException, DiscordException, MissingPermissionsException{
-		EmbedObject embed = new EmbedBuilder()
-			.withColor(137, 204, 240)
-			.withDescription(content)
-			.build();
-
-		channel.sendMessage("", embed, true);
+	public CommandResult onMessageSay(Context context, Channel channel, String content) throws RateLimitException, DiscordException, MissingPermissionsException{
+		channel.info(content);
 		return CommandResult.SUCCESS;
 	}
 	
 	@Command("message show")
-	public CommandResult onMessageShow(Context context, IMessage message){
+	public CommandResult onMessageShow(Context context, IMessage message) throws RateLimitException, DiscordException, MissingPermissionsException{
+		Channel channel = context.get(Channel.class);
+		
 		if ((message.getContent() == null || message.getContent().equals("")) && message.getEmbedded().size() > 0){
 			IEmbed embed = message.getEmbedded().get(0);
-			context.get(CommandSource.class).sendMessage("```" + embed.getDescription() + "```");
+			channel.info("```" + embed.getDescription() + "```");
 		} else {
-			context.get(CommandSource.class).sendMessage("```" + message.getContent() + "```");
+			channel.info("```" + message.getContent() + "```");
 		}
 		return CommandResult.SUCCESS;
 	}
@@ -45,13 +41,13 @@ public class MessageCommands {
 	@Command("message edit")
 	public CommandResult onMessageEdit(Context context, IMessage message, String content) throws MissingPermissionsException, RateLimitException, DiscordException{
 		if (message.isDeleted()){
-			context.get(CommandSource.class).sendMessage("Cannot edit deleted message.");
+			context.get(Channel.class).error("Cannot edit deleted message.");
 			return CommandResult.FAILURE;
 		}
 		
 		if ((message.getContent() == null || message.getContent().equals("")) && message.getEmbedded().size() > 0){
 			if (message.getEmbedded().size() > 1){
-				context.get(CommandSource.class).sendMessage("Cannot edit message with more than one embed.");
+				context.get(Channel.class).error("Cannot edit message with more than one embed.");
 				return CommandResult.FAILURE;
 			}
 			IEmbed embed = message.getEmbedded().get(0);
@@ -84,7 +80,7 @@ public class MessageCommands {
 		} else {
 			message.edit(content);
 		}
-		context.get(CommandSource.class).sendMessage("Message in " + message.getChannel().mention() + " edited.");
+		context.get(Channel.class).info("Message in " + message.getChannel().mention() + " edited.");
 		return CommandResult.SUCCESS;
 	}
 	

@@ -1,32 +1,37 @@
 package uk.me.pilgrim.dev.discordBot.events;
 
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
+import uk.me.pilgrim.dev.core.util.Context;
+import uk.me.pilgrim.dev.discordBot.models.Channel;
+import uk.me.pilgrim.dev.discordBot.models.Guild;
+import uk.me.pilgrim.dev.discordBot.models.User;
 
 public class MessageEvent{
 
-	private final IMessage message;
+	private final Context context;
 	
-	public MessageEvent(IMessage message) {
-		this.message = message;
+	public MessageEvent(Context context) {
+		this.context = context;
+	}
+	
+	public Context getContext(){
+		return context;
 	}
 	
 	public IMessage getMessage(){
-		return this.message;
+		return this.context.get(IMessage.class);
 	}
 	
-	public IUser getAuthor(){
-		return this.getMessage().getAuthor();
+	public User getAuthor(){
+		return this.context.get(User.class);
 	}
 	
-	public IChannel getChannel(){
-		return this.getMessage().getChannel();
+	public Channel getChannel(){
+		return this.context.get(Channel.class);
 	}
 	
-	public IGuild getGuild(){
-		return this.getMessage().getGuild();
+	public Guild getGuild(){
+		return this.context.get(Guild.class);
 	}
 	
 	public String getContent(){

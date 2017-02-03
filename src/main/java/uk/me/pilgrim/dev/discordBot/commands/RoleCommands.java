@@ -6,7 +6,6 @@ import javax.inject.Inject;
 
 import com.google.common.collect.Lists;
 
-import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
@@ -14,9 +13,9 @@ import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 import uk.me.pilgrim.dev.core.commands.CommandResult;
 import uk.me.pilgrim.dev.core.commands.annotations.Command;
-import uk.me.pilgrim.dev.core.commands.sources.CommandSource;
 import uk.me.pilgrim.dev.core.util.Context;
 import uk.me.pilgrim.dev.core.util.text.Text;
+import uk.me.pilgrim.dev.discordBot.models.Channel;
 import uk.me.pilgrim.dev.discordBot.models.Guild;
 
 public class RoleCommands {
@@ -26,8 +25,8 @@ public class RoleCommands {
 	
 	
 	@Command("role")
-	public CommandResult onRoleList(Context context){
-		Guild guild = guildRegistry.get(context.get(IGuild.class));
+	public CommandResult onRoleList(Context context) throws RateLimitException, DiscordException, MissingPermissionsException{
+		Guild guild = context.get(Guild.class);
 		String message = "Self Assignable Roles: ";
 		
 		List<String> roles = Lists.newArrayList();
@@ -35,21 +34,22 @@ public class RoleCommands {
 			roles.add(guild.getDiscordGuild().getRoleByID(id).getName());
 		}
 		
-		message += "`" + Text.implodeCommaAnd(roles, "`, `","` and `") + "`";
-		
 		if (roles.isEmpty()){
-			message = "There are currently no self assignable roles.";
+			context.get(Channel.class).info("There are currently no self assignable roles.");
+			return CommandResult.SUCCESS;
 		}
 		
-		context.get(CommandSource.class).sendMessage(message);
+		message += "`" + Text.implodeCommaAnd(roles, "`, `","` and `") + "`";
+		
+		context.get(Channel.class).info(message);
 		return CommandResult.SUCCESS;
 	}
 	
 	@Command("role")
 	public CommandResult onRole(Context context, IRole role) throws MissingPermissionsException, RateLimitException, DiscordException{
-		Guild guild = guildRegistry.get(context.get(IGuild.class));
+		Guild guild = context.get(Guild.class);
 		if (!guild.getAssignableRoles().contains(role.getID())){
-			context.get(CommandSource.class).sendMessage("Role `" + role.getName() + "` is not self assignable.");
+			context.get(Channel.class).error("Role `" + role.getName() + "` is not self assignable.");
 			return CommandResult.FAILURE;
 		}
 		
@@ -57,30 +57,31 @@ public class RoleCommands {
 		
 		if (user.getRolesForGuild(guild.getDiscordGuild()).contains(role)){
 			user.removeRole(role);
-			context.get(CommandSource.class).sendMessage("Removed role `" + role.getName() + "`.");
+			context.get(Channel.class).info("Removed role `" + role.getName() + "` to " + user.mention() + ".");
 		} else {
 			user.addRole(role);
-			context.get(CommandSource.class).sendMessage("Added role `" + role.getName() + "`.");
+			context.get(Channel.class).info("Added role `" + role.getName() + "` to " + user.mention() + ".");
 		}
 		
 		return CommandResult.SUCCESS;
 	}
 	
 	@Command("role add")
-	public CommandResult onRoleAdd(Context context, IRole role){
-		Guild guild = guildRegistry.get(context.get(IGuild.class));
-		guild.getAssignableRoles().add(role.getID());
+	public CommandResult onRoleAdd(Context context, IRole role) throws RateLimitException, DiscordException, MissingPermissionsException{
+		Guild guild = context.get(Guild.class);
+		if (!guild.getAssignableRoles().contains(role.getID()))
+			guild.getAssignableRoles().add(role.getID());
 		guild.save();
-		context.get(CommandSource.class).sendMessage("Added `" + role.getName() + "` to self assignable role list.");
+		context.get(Channel.class).info("Added `" + role.getName() + "` to self assignable role list.");
 		return CommandResult.SUCCESS;
 	}
 	
 	@Command("role remove")
-	public CommandResult onRoleRemove(Context context, IRole role){
-		Guild guild = guildRegistry.get(context.get(IGuild.class));
+	public CommandResult onRoleRemove(Context context, IRole role) throws RateLimitException, DiscordException, MissingPermissionsException{
+		Guild guild = context.get(Guild.class);
 		guild.getAssignableRoles().remove(role.getID());
 		guild.save();
-		context.get(CommandSource.class).sendMessage("Removed `" + role.getName() + "` from self assignable role list.");
+		context.get(Channel.class).info("Removed `" + role.getName() + "` from self assignable role list.");
 		return CommandResult.SUCCESS;
 	}
 }

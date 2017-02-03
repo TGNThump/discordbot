@@ -15,7 +15,6 @@ import com.google.common.eventbus.Subscribe;
 
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -27,6 +26,7 @@ import uk.me.pilgrim.dev.core.Core;
 import uk.me.pilgrim.dev.core.util.text.Text;
 import uk.me.pilgrim.dev.discordBot.config.Lang;
 import uk.me.pilgrim.dev.discordBot.events.MessageBlacklistedEvent;
+import uk.me.pilgrim.dev.discordBot.events.MessageReceivedEvent;
 import uk.me.pilgrim.dev.discordBot.models.Guild;
 
 /**
@@ -56,7 +56,7 @@ public class BlacklistListener {
 					.build();
 			
 			event.getMessage().delete();
-			event.getAuthor().getOrCreatePMChannel().sendMessage("", embed, true);
+			event.getAuthor().getDiscordUser().getOrCreatePMChannel().sendMessage("", embed, true);
 		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
 			e.printStackTrace();
 		}
@@ -86,7 +86,7 @@ public class BlacklistListener {
 			});
 			
 			if (!caughtWords.isEmpty()){
-				Core.Events.fire(new MessageBlacklistedEvent(message, caughtWords));
+				Core.Events.fire(new MessageBlacklistedEvent(event.getContext(), caughtWords));
 			}
 		} catch (Exception e) {
 			try {

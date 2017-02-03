@@ -6,23 +6,30 @@
  */
 package uk.me.pilgrim.dev.discordBot.commands.arguments;
 
+import javax.inject.Inject;
+
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
 import uk.me.pilgrim.dev.core.Core;
 import uk.me.pilgrim.dev.core.commands.arguments.ArgumentParser;
 import uk.me.pilgrim.dev.core.commands.exceptions.ArgumentException;
+import uk.me.pilgrim.dev.discordBot.models.Channel;
 
 /**
  * @author Benjamin Pilgrim &lt;ben@pilgrim.me.uk&gt;
  */
 public class IChannelArgument implements ArgumentParser{
 
+	@Inject
+	Channel.Registry channelRegistry;
+	
 	/* (non-Javadoc)
 	 * @see uk.me.pilgrim.dev.core.commands.arguments.ArgumentParser#isTypeSupported(java.lang.Class)
 	 */
 	@Override
 	public boolean isTypeSupported(Class<?> type) {
-		return type == IChannel.class;
+		return type == IChannel.class ||
+				type == Channel.class;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -34,7 +41,12 @@ public class IChannelArgument implements ArgumentParser{
 		value = value.substring(2, value.length()-1);
 		
 		IChannel channel = Core.get(IDiscordClient.class).getChannelByID(value);
-		if (channel != null) return (T) channel;
+		if (channel != null){
+			if (type.isAssignableFrom(Channel.class)){
+				return (T) channelRegistry.get(channel);
+			}
+			return (T) channel;
+		}
 		
 		throw getArgumentException(type, arg);
 	}

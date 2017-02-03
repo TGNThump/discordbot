@@ -6,14 +6,13 @@
  */
 package uk.me.pilgrim.dev.discordBot.commands.source;
 
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 import uk.me.pilgrim.dev.core.commands.sources.CommandSource;
-import uk.me.pilgrim.dev.core.util.logger.TerraLogger;
-import uk.me.pilgrim.dev.discordBot.events.MessageEvent;
+import uk.me.pilgrim.dev.core.util.Context;
+import uk.me.pilgrim.dev.discordBot.models.Channel;
+import uk.me.pilgrim.dev.discordBot.models.User;
 
 
 /**
@@ -21,10 +20,10 @@ import uk.me.pilgrim.dev.discordBot.events.MessageEvent;
  */
 public class MessageCommandSource implements CommandSource {
 	
-	private MessageEvent event;
+	private Context context;
 	
-	public MessageCommandSource(MessageEvent event){
-		this.event = event;
+	public MessageCommandSource(Context context){
+		this.context = context;
 	}
 	
 	/* (non-Javadoc)
@@ -32,28 +31,41 @@ public class MessageCommandSource implements CommandSource {
 	 */
 	@Override
 	public boolean hasPermission(String perm) {
-		return true;
+		return context.get(User.class).hasPermission(perm);
 	}
 	
 	/* (non-Javadoc)
 	 * @see uk.me.pilgrim.dev.core.commands.sources.CommandSource#sendMessage(java.lang.String)
 	 */
 	@Override
-	public void sendMessage(String of) {
+	public void sendMessage(String content) {
 		try {
-			boolean block = of.endsWith("```");
-			if (of.length() > 1900)
-				of = of.substring(0, 1900);
-			if (block) of += "```";
+			context.get(Channel.class).info(content);
+		} catch (RateLimitException | DiscordException | MissingPermissionsException e) {
+			e.printStackTrace();
+		}
+	}
 
-			EmbedObject embed = new EmbedBuilder()
-				.withColor(137, 204, 240)
-				.withDescription(of)
-				.build();
-			event.getMessage().getChannel().sendMessage("", embed, true);
+	/* (non-Javadoc)
+	 * @see uk.me.pilgrim.dev.core.commands.sources.CommandSource#info(java.lang.String)
+	 */
+	@Override
+	public void info(String content) {
+		try {
+			context.get(Channel.class).info(content);
+		} catch (RateLimitException | DiscordException | MissingPermissionsException e) {
+			e.printStackTrace();
+		}
+	}
 
-			TerraLogger.info(of);
-		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
+	/* (non-Javadoc)
+	 * @see uk.me.pilgrim.dev.core.commands.sources.CommandSource#error(java.lang.String)
+	 */
+	@Override
+	public void error(String content) {
+		try {
+			context.get(Channel.class).error(content);
+		} catch (RateLimitException | DiscordException | MissingPermissionsException e) {
 			e.printStackTrace();
 		}
 	}

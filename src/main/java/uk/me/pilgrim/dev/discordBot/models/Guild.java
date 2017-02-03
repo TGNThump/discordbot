@@ -6,59 +6,28 @@ import java.util.List;
 import javax.inject.Singleton;
 
 import com.google.common.collect.Lists;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ninja.leaping.configurate.objectmapping.Setting;
-import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import uk.me.pilgrim.dev.core.config.Config;
-import uk.me.pilgrim.dev.core.events.ConfigurationReloadEvent;
 
 public class Guild extends Config {
 	
-	@Inject
-	protected Channel.Factory channelFactory;
+//	@Inject
+//	protected Channel.Registry channelRegistry;
 	
 	protected IGuild guild;
 
+	@Setting
+	String name;
+	
 	@Setting
 	List<String> blacklist;
 	
 	@Setting
 	List<String> assignableRoles;
-	
-	@Setting
-	HashMap<String, Channel> channels;
-	
-	public Guild(){
-
-	}
-	
-	@Inject
-	public Guild(@Assisted IGuild guild, EventBus events){
-		super("data/servers", guild.getID() + ".conf");
-		this.guild = guild;
-		events.register(this);
-	}
-	
-	@Override
-	public void setDefaults() {
-		blacklist = setDefault(blacklist, Lists.newArrayList());
-		channels = setDefault(channels, new HashMap<>());
-		assignableRoles = setDefault(assignableRoles, Lists.newArrayList());
-	}
-	
-	public Channel getChannel(IChannel channel){ 
-		if (!channels.containsKey(channel.getID())){
-			channels.put(channel.getID(), channelFactory.create(channel));
-			save();
-		}
-		
-		return channels.get(channel.getID());
-	}
 	
 	public IGuild getDiscordGuild(){
 		return guild;
@@ -72,9 +41,23 @@ public class Guild extends Config {
 		return assignableRoles;
 	}
 	
-	@Subscribe
-	public void onConfigReload(ConfigurationReloadEvent event){
-		reload();
+	public Guild(){
+		registerEvents();
+	}
+	
+	@Inject
+	public Guild(@Assisted IGuild guild){
+		super("data/servers", guild.getID() + ".conf");
+		this.guild = guild;
+		this.name = guild.getName();
+		registerEvents();
+	}
+	
+	@Override
+	public void setDefaults() {
+		if (guild != null) name = guild.getName();
+		blacklist = setDefault(blacklist, Lists.newArrayList());
+		assignableRoles = setDefault(assignableRoles, Lists.newArrayList());
 	}
 	
 	// Factory and Registry

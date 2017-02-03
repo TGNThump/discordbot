@@ -12,12 +12,9 @@ import com.google.common.eventbus.Subscribe;
 
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import uk.me.pilgrim.dev.core.commands.CommandService;
 import uk.me.pilgrim.dev.core.commands.sources.CommandSource;
-import uk.me.pilgrim.dev.core.util.Context;
 import uk.me.pilgrim.dev.discordBot.commands.source.MessageCommandSource;
 import uk.me.pilgrim.dev.discordBot.events.MessageReceivedEvent;
 
@@ -34,10 +31,8 @@ public class CommandListener {
 	
 	@Subscribe
 	public void onMessageReceivedEvent(MessageReceivedEvent event) throws Throwable{
-		IMessage message = event.getMessage();
-		IUser author = event.getAuthor();
-		IGuild guild = event.getGuild();
-		IChannel channel = event.getChannel();
+		IUser author = event.getAuthor().getDiscordUser();
+		IChannel channel = event.getChannel().getDiscordChannel();
 		String text = event.getContent();
 
 		if (author.isBot()) return;
@@ -45,16 +40,10 @@ public class CommandListener {
 		if (text.startsWith("<@" + client.getOurUser().getID() + ">") || text.startsWith("<@!" + client.getOurUser().getID() + ">") || channel.isPrivate()){
 			if (!channel.isPrivate()) text = text.substring(text.indexOf(">")+1);
 			while(text.startsWith(" ")) text = text.substring(1);
-				
-			Context context = new Context();
-			context.put(CommandSource.class, new MessageCommandSource(event));
-			context.put(IDiscordClient.class, client);
-			context.put(IUser.class, author);
-			if (!channel.isPrivate()) context.put(IGuild.class, guild);
-			context.put(IChannel.class, channel);
-			context.put(IMessage.class, message);
 			
-			commandService.processCommand(context, text);
+			event.getContext().put(CommandSource.class, new MessageCommandSource(event.getContext()));
+			
+			commandService.processCommand(event.getContext(), text);
 		}
 	}
 	

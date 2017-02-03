@@ -25,9 +25,9 @@ public class MessageListener {
 	@Subscribe
 	public void onMessageReceivedEvent(MessageReceivedEvent event) throws CommandException{
 		IMessage message = event.getMessage();
-		IUser author = event.getAuthor();
-		IGuild guild = event.getGuild();
-		IChannel channel = event.getChannel();
+		IUser author = event.getAuthor().getDiscordUser();
+		IGuild guild = event.getGuild().getDiscordGuild();
+		IChannel channel = event.getChannel().getDiscordChannel();
 		String text = event.getContent();
 
 		if (author.isBot()) return;

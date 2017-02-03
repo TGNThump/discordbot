@@ -36,6 +36,7 @@ import uk.me.pilgrim.dev.discordBot.listeners.MessageListener;
 import uk.me.pilgrim.dev.discordBot.listeners.ReadyListener;
 import uk.me.pilgrim.dev.discordBot.models.Channel;
 import uk.me.pilgrim.dev.discordBot.models.Guild;
+import uk.me.pilgrim.dev.discordBot.models.User;
 
 /**
  * @author Benjamin Pilgrim &lt;ben@pilgrim.me.uk&gt;
@@ -95,6 +96,7 @@ public class DiscordBot extends Project {
 		
 		install(new FactoryModuleBuilder().build(Guild.Factory.class));
 		install(new FactoryModuleBuilder().build(Channel.Factory.class));
+		install(new FactoryModuleBuilder().build(User.Factory.class));
 
 		
 		registerChild(new DiscordEvents());
