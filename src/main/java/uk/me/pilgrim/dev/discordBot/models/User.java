@@ -9,24 +9,49 @@ import com.google.inject.assistedinject.Assisted;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.Permissions;
+import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.RateLimitException;
 import uk.me.pilgrim.dev.core.config.Config;
 
 public class User extends Config{
+	
+	@Inject
+	Channel.Registry channelRegistry;
 	
 	private IUser user;
 	
 	@Setting
 	String name;
 	
-	@Setting
-	Boolean admin;
-	
 	public IUser getDiscordUser(){
 		return user;
 	}
 	
-	public boolean hasPermission(String perm) {
-		return admin;
+	public String getID() {
+		return user.getID();
+	}
+	
+	public Channel getPMChannel() throws RateLimitException, DiscordException{
+		return channelRegistry.get(user.getOrCreatePMChannel());
+	}
+	
+	public boolean hasPermission(Guild guild, String perm) {
+		if (guild.isOwner(this)) return true;
+		
+		switch(perm){
+			case "owner": return false;
+			case "admin": return guild.isAdmin(this);
+			case "mod": return guild.isAdmin(this) || guild.isMod(this);
+		}
+		
+		try{
+			Permissions permission = Permissions.valueOf(perm);
+			return (user.getPermissionsForGuild(guild.getDiscordGuild()).contains(permission));
+		} catch (IllegalArgumentException ex){
+			return false;
+		}
+		
 	}
 	
 	public User(){
@@ -44,7 +69,6 @@ public class User extends Config{
 	@Override
 	public void setDefaults() {
 		if (user != null) name = user.getName();
-		admin = setDefault(admin, false);
 	}
 	
 	// Factory and Registry
@@ -78,5 +102,9 @@ public class User extends Config{
 	
 	public String getName() {
 		return user.getName();
+	}
+
+	public String mention() {
+		return user.mention();
 	}
 }

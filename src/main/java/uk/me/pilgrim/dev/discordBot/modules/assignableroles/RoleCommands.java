@@ -1,4 +1,4 @@
-package uk.me.pilgrim.dev.discordBot.assignableroles;
+package uk.me.pilgrim.dev.discordBot.modules.assignableroles;
 
 import java.util.List;
 
@@ -68,7 +68,7 @@ public class RoleCommands {
 	}
 	
 	@Command("role add")
-	@Perm("role.add")
+	@Perm("MANAGE_ROLES")
 	public CommandResult onRoleAdd(Context context, IRole role) throws RateLimitException, DiscordException, MissingPermissionsException{
 		Guild guild = context.get(Guild.class);
 		if (!guild.getAssignableRoles().contains(role.getID()))
@@ -79,7 +79,7 @@ public class RoleCommands {
 	}
 	
 	@Command("role remove")
-	@Perm("role.remove")
+	@Perm("MANAGE_ROLES")
 	public CommandResult onRoleRemove(Context context, IRole role) throws RateLimitException, DiscordException, MissingPermissionsException{
 		Guild guild = context.get(Guild.class);
 		guild.getAssignableRoles().remove(role.getID());

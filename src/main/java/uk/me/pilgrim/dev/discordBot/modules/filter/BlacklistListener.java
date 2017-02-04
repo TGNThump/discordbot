@@ -4,9 +4,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-package uk.me.pilgrim.dev.discordBot.blacklist;
+package uk.me.pilgrim.dev.discordBot.modules.filter;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -14,12 +15,10 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 
 import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 import uk.me.pilgrim.dev.core.Core;
@@ -28,6 +27,7 @@ import uk.me.pilgrim.dev.discordBot.config.Lang;
 import uk.me.pilgrim.dev.discordBot.events.MessageBlacklistedEvent;
 import uk.me.pilgrim.dev.discordBot.events.MessageEditedEvent;
 import uk.me.pilgrim.dev.discordBot.events.MessageReceivedEvent;
+import uk.me.pilgrim.dev.discordBot.models.Channel;
 import uk.me.pilgrim.dev.discordBot.models.Guild;
 
 /**
@@ -51,13 +51,14 @@ public class BlacklistListener {
 			String words = "`" + Text.implodeCommaAnd(event.getWords(), "`, `","` and `") + "`";
 			String response = String.format(lang.blacklist_message_deleted, event.getChannel().getName(), event.getWords().size() > 1 ? "s" : "", words, event.getMessage().getContent());
 			
-			EmbedObject embed = new EmbedBuilder()
-					.withColor(137, 204, 240)
-					.withDescription(response)
-					.build();
-			
 			event.getMessage().delete();
-			event.getAuthor().getDiscordUser().getOrCreatePMChannel().sendMessage("", embed, false);
+			event.getAuthor().getPMChannel().info(response);
+			
+			Optional<Channel> log = event.getGuild().getLogChannel();
+			if (!log.isPresent()) return;
+			
+			log.get().info("Deleted message by " + event.getAuthor().mention() + " in " + event.getChannel().mention() + " because it contained banned words.");
+			
 		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
 			e.printStackTrace();
 		}

@@ -43,7 +43,8 @@ public class IChannelArgument implements ArgumentParser{
 		IChannel channel = Core.get(IDiscordClient.class).getChannelByID(value);
 		if (channel != null){
 			if (type.isAssignableFrom(Channel.class)){
-				return (T) channelRegistry.get(channel);
+				Channel c = channelRegistry.get(channel);
+				return (T) c;
 			}
 			return (T) channel;
 		}

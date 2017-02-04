@@ -123,4 +123,8 @@ public class Channel extends Config{
 			return channels.get(channel.getID());
 		}
 	}
+
+	public String mention() {
+		return channel.mention();
+	}
 }

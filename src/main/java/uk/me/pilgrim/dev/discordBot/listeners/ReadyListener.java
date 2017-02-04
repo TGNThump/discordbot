@@ -19,7 +19,7 @@ public class ReadyListener {
 	@Subscribe
 	public void onReadyEvent(ReadyEvent event){
 		
-		event.getClient().changePresence(false);
+		event.getClient().online();
 		TerraLogger.info("Connected to " + event.getClient().getGuilds().size() + " Guild.");
 		event.getClient().getGuilds().forEach(guild -> {
 			TerraLogger.info(" - " + guild.getName());

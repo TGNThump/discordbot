@@ -4,7 +4,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-package uk.me.pilgrim.dev.discordBot.commands;
+package uk.me.pilgrim.dev.discordBot.modules.test;
 
 import java.util.Optional;
 
@@ -51,9 +51,45 @@ public class TestCommand {
 		return CommandResult.SUCCESS;
 	}
 	
+	@Command("pronoun")
+	@Perm("CHANGE_NICKNAME")
+	public CommandResult onPronoun(Context context, Pronoun pronoun) throws MissingPermissionsException, DiscordException, RateLimitException{
+		IGuild guild = context.get(IGuild.class);
+		User user = context.get(User.class);
+		Optional<String> currentNick = user.getDiscordUser().getNicknameForGuild(context.get(IGuild.class));
+		
+		
+		String c = "";
+		switch(pronoun){
+			case HE:
+				c = "♂";
+				break;
+			case SHE:
+				c = "♀";
+				break;
+			case THEY:
+				c = "⚥";
+				break;
+		}
+		
+		if (currentNick.isPresent()){
+			String nick = currentNick.get();
+			if (nick.endsWith(" ♂") || nick.endsWith(" ♀") || nick.endsWith(" ⚥")){
+				guild.setUserNickname(user.getDiscordUser(), nick.substring(0, nick.length()-2) + " " + c);
+			} else {
+				guild.setUserNickname(user.getDiscordUser(), nick + " " + c);
+			}
+		} else {
+			guild.setUserNickname(user.getDiscordUser(), user.getName() + " " + c);
+		}
+		context.get(Channel.class).info("Changed your nickname, " + user.mention() + ".");
+		
+		return CommandResult.SUCCESS;
+	}
+	
 	
 	@Command("user")
-	@Perm("test")
+	@Perm("admin")
 	public CommandResult onUser(Context context, Optional<User> user) throws RateLimitException, DiscordException, MissingPermissionsException{
 		IUser author = user.orElse(context.get(User.class)).getDiscordUser();
 		IGuild guild = context.get(IGuild.class);
@@ -71,14 +107,14 @@ public class TestCommand {
 	}
 	
 	@Command("test")
-	@Perm("test")
+	@Perm("admin")
 	public CommandResult onTest(Context context, User user) throws RateLimitException, DiscordException, MissingPermissionsException{		
 		context.get(Channel.class).info(user.getName());
 		return CommandResult.SUCCESS;
 	}
 	
 	@Command("test")
-	@Perm("test")
+	@Perm("admin")
 	public CommandResult onTest2(Context context, Channel channel) throws RateLimitException, DiscordException, MissingPermissionsException{
 		context.get(Channel.class).info(channel.toString());
 		

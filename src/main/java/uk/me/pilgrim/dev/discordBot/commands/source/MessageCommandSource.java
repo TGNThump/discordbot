@@ -12,6 +12,7 @@ import sx.blah.discord.util.RateLimitException;
 import uk.me.pilgrim.dev.core.commands.sources.CommandSource;
 import uk.me.pilgrim.dev.core.util.Context;
 import uk.me.pilgrim.dev.discordBot.models.Channel;
+import uk.me.pilgrim.dev.discordBot.models.Guild;
 import uk.me.pilgrim.dev.discordBot.models.User;
 
 
@@ -31,7 +32,7 @@ public class MessageCommandSource implements CommandSource {
 	 */
 	@Override
 	public boolean hasPermission(String perm) {
-		return context.get(User.class).hasPermission(perm);
+		return context.get(User.class).hasPermission(context.get(Guild.class), perm);
 	}
 	
 	/* (non-Javadoc)

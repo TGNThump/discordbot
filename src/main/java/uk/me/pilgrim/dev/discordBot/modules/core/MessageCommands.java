@@ -1,4 +1,4 @@
-package uk.me.pilgrim.dev.discordBot.commands;
+package uk.me.pilgrim.dev.discordBot.modules.core;
 
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IEmbed;
@@ -16,20 +16,20 @@ import uk.me.pilgrim.dev.discordBot.models.Channel;
 public class MessageCommands {
 	
 	@Command("message")
-	@Perm("message")
+	@Perm("MANAGE_MESSAGES")
 	public CommandResult onMessage(Context context){
 		return CommandResult.SUCCESS;
 	}
 	
 	@Command("message say")
-	@Perm("message.say")
+	@Perm("MANAGE_MESSAGES")
 	public CommandResult onMessageSay(Context context, Channel channel, String content) throws RateLimitException, DiscordException, MissingPermissionsException{
 		channel.info(content);
 		return CommandResult.SUCCESS;
 	}
 	
 	@Command("message show")
-	@Perm("message.show")
+	@Perm("MANAGE_MESSAGES")
 	public CommandResult onMessageShow(Context context, IMessage message) throws RateLimitException, DiscordException, MissingPermissionsException{
 		Channel channel = context.get(Channel.class);
 		
@@ -43,7 +43,7 @@ public class MessageCommands {
 	}
 	
 	@Command("message edit")
-	@Perm("message.edit")
+	@Perm("MANAGE_MESSAGES")
 	public CommandResult onMessageEdit(Context context, IMessage message, String content) throws MissingPermissionsException, RateLimitException, DiscordException{
 		if (message.isDeleted()){
 			context.get(Channel.class).error("Cannot edit deleted message.");
@@ -90,7 +90,7 @@ public class MessageCommands {
 	}
 	
 	@Command("message delete")
-	@Perm("message.delete")
+	@Perm("MANAGE_MESSAGES")
 	public CommandResult onMessageDelete(Context context, IMessage message) throws MissingPermissionsException, RateLimitException, DiscordException{
 		message.delete();
 		return CommandResult.SUCCESS;
