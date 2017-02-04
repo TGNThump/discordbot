@@ -26,6 +26,7 @@ import uk.me.pilgrim.dev.core.Core;
 import uk.me.pilgrim.dev.core.util.text.Text;
 import uk.me.pilgrim.dev.discordBot.config.Lang;
 import uk.me.pilgrim.dev.discordBot.events.MessageBlacklistedEvent;
+import uk.me.pilgrim.dev.discordBot.events.MessageEditedEvent;
 import uk.me.pilgrim.dev.discordBot.events.MessageReceivedEvent;
 import uk.me.pilgrim.dev.discordBot.models.Guild;
 
@@ -56,58 +57,62 @@ public class BlacklistListener {
 					.build();
 			
 			event.getMessage().delete();
-			event.getAuthor().getDiscordUser().getOrCreatePMChannel().sendMessage("", embed, true);
+			event.getAuthor().getDiscordUser().getOrCreatePMChannel().sendMessage("", embed, false);
 		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@Subscribe
-	public void onMessageReceivedEvent(MessageReceivedEvent event){
-		try{
-			IMessage message = event.getMessage();
-			IUser author = message.getAuthor();
-			IChannel channel = message.getChannel();
-			String text = event.getMessage().getContent();
-	
-			if (author.isBot()) return;
-			if (channel.isPrivate()) return;
-			if (text.startsWith("<@" + client.getOurUser().getID() + ">") || text.startsWith("<@!" + client.getOurUser().getID() + ">") || channel.isPrivate()) return;
-			
-			List<String> caughtWords = Lists.newArrayList();
-			
-			Guild guild = guildRegistry.get(channel.getGuild());
-			
-			guild.getBlacklist().forEach((word) -> {
-				String lower = text.toLowerCase();
-				if (lower.startsWith(word + " ") || lower.contains(" " + word + " ") || lower.endsWith(" " + word) || lower.equals(word)){
-					caughtWords.add(word);
-				}
-			});
-			
-			if (!caughtWords.isEmpty()){
-				Core.Events.fire(new MessageBlacklistedEvent(event.getContext(), caughtWords));
+	public void onMessageEditEvent(MessageEditedEvent event){
+		IMessage message = event.getNew();
+		IUser author = message.getAuthor();
+		IChannel channel = message.getChannel();
+		String text = message.getContent();
+
+		if (author.isBot()) return;
+		if (channel.isPrivate()) return;
+		
+		List<String> caughtWords = Lists.newArrayList();
+		
+		Guild guild = guildRegistry.get(channel.getGuild());
+		
+		guild.getBlacklist().forEach((word) -> {
+			String lower = text.toLowerCase();
+			if (lower.startsWith(word + " ") || lower.contains(" " + word + " ") || lower.endsWith(" " + word) || lower.equals(word)){
+				caughtWords.add(word);
 			}
-		} catch (Exception e) {
-			try {
-				String reply = "";
-				StackTraceElement[] stackTrace = e.getStackTrace();
-				reply += e;
-				reply += "\n";
-				for (StackTraceElement s : stackTrace){
-					reply += " at " + s;
-					
-					reply += "\n";
-				}
-				
-				reply = reply.substring(0, 1900);
-				
-				event.getMessage().reply("```" + reply + "```");
-			} catch (MissingPermissionsException | RateLimitException | DiscordException e1) {
-				e1.printStackTrace();
-			}
-			e.printStackTrace();
+		});
+		
+		if (!caughtWords.isEmpty()){
+			Core.Events.fire(new MessageBlacklistedEvent(event.getContext(), caughtWords));
 		}
 	}
 	
+	@Subscribe
+	public void onMessageReceivedEvent(MessageReceivedEvent event){
+		IMessage message = event.getMessage();
+		IUser author = message.getAuthor();
+		IChannel channel = message.getChannel();
+		String text = event.getMessage().getContent();
+
+		if (author.isBot()) return;
+		if (channel.isPrivate()) return;
+		if (text.startsWith("<@" + client.getOurUser().getID() + ">") || text.startsWith("<@!" + client.getOurUser().getID() + ">") || channel.isPrivate()) return;
+		
+		List<String> caughtWords = Lists.newArrayList();
+		
+		Guild guild = guildRegistry.get(channel.getGuild());
+		
+		guild.getBlacklist().forEach((word) -> {
+			String lower = text.toLowerCase();
+			if (lower.startsWith(word + " ") || lower.contains(" " + word + " ") || lower.endsWith(" " + word) || lower.equals(word)){
+				caughtWords.add(word);
+			}
+		});
+		
+		if (!caughtWords.isEmpty()){
+			Core.Events.fire(new MessageBlacklistedEvent(event.getContext(), caughtWords));
+		}
+	}
 }

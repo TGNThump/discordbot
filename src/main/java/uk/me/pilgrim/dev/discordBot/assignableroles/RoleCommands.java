@@ -1,4 +1,4 @@
-package uk.me.pilgrim.dev.discordBot.commands;
+package uk.me.pilgrim.dev.discordBot.assignableroles;
 
 import java.util.List;
 
@@ -13,6 +13,7 @@ import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 import uk.me.pilgrim.dev.core.commands.CommandResult;
 import uk.me.pilgrim.dev.core.commands.annotations.Command;
+import uk.me.pilgrim.dev.core.commands.annotations.Perm;
 import uk.me.pilgrim.dev.core.util.Context;
 import uk.me.pilgrim.dev.core.util.text.Text;
 import uk.me.pilgrim.dev.discordBot.models.Channel;
@@ -57,7 +58,7 @@ public class RoleCommands {
 		
 		if (user.getRolesForGuild(guild.getDiscordGuild()).contains(role)){
 			user.removeRole(role);
-			context.get(Channel.class).info("Removed role `" + role.getName() + "` to " + user.mention() + ".");
+			context.get(Channel.class).info("Removed role `" + role.getName() + "` from " + user.mention() + ".");
 		} else {
 			user.addRole(role);
 			context.get(Channel.class).info("Added role `" + role.getName() + "` to " + user.mention() + ".");
@@ -67,6 +68,7 @@ public class RoleCommands {
 	}
 	
 	@Command("role add")
+	@Perm("role.add")
 	public CommandResult onRoleAdd(Context context, IRole role) throws RateLimitException, DiscordException, MissingPermissionsException{
 		Guild guild = context.get(Guild.class);
 		if (!guild.getAssignableRoles().contains(role.getID()))
@@ -77,6 +79,7 @@ public class RoleCommands {
 	}
 	
 	@Command("role remove")
+	@Perm("role.remove")
 	public CommandResult onRoleRemove(Context context, IRole role) throws RateLimitException, DiscordException, MissingPermissionsException{
 		Guild guild = context.get(Guild.class);
 		guild.getAssignableRoles().remove(role.getID());

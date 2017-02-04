@@ -51,7 +51,7 @@ public class ExceptionListener {
 			.withDescription(reply)
 			.build();
 		
-		if (Core.isDevMode()) event.getChannel().getDiscordChannel().sendMessage("", embed, true);
-		client.getUserByID(config.adminId).getOrCreatePMChannel().sendMessage("", embed, true);
+		if (Core.isDevMode()) event.getChannel().getDiscordChannel().sendMessage("", embed, false);
+		client.getUserByID(config.adminId).getOrCreatePMChannel().sendMessage("", embed, false);
 	}
 }

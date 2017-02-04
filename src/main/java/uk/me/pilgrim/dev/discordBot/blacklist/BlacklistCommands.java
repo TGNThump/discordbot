@@ -13,6 +13,7 @@ import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 import uk.me.pilgrim.dev.core.commands.CommandResult;
 import uk.me.pilgrim.dev.core.commands.annotations.Command;
+import uk.me.pilgrim.dev.core.commands.annotations.Perm;
 import uk.me.pilgrim.dev.core.util.Context;
 import uk.me.pilgrim.dev.core.util.text.Text;
 import uk.me.pilgrim.dev.discordBot.models.Channel;
@@ -42,6 +43,7 @@ public class BlacklistCommands {
 	}
 	
 	@Command("blacklist add")
+	@Perm("blacklist.add")
 	public CommandResult onBlacklistAdd(Context context, String word) throws MissingPermissionsException, RateLimitException, DiscordException{
 		Guild guild = context.get(Guild.class);
 		guild.getBlacklist().add(word.toLowerCase());
@@ -51,6 +53,7 @@ public class BlacklistCommands {
 	}
 	
 	@Command("blacklist remove")
+	@Perm("blacklist.remove")
 	public CommandResult onBlacklistRemove(Context context, String word) throws MissingPermissionsException, RateLimitException, DiscordException{
 		Guild guild = context.get(Guild.class);
 		guild.getBlacklist().remove(word.toLowerCase());

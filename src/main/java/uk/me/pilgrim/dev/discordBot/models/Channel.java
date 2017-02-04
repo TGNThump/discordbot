@@ -9,24 +9,29 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ninja.leaping.configurate.objectmapping.Setting;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 import uk.me.pilgrim.dev.core.config.Config;
 import uk.me.pilgrim.dev.core.util.logger.TerraLogger;
+import uk.me.pilgrim.dev.core.util.text.ConsoleColor;
 
 public class Channel extends Config{
-
-//	@Inject
-//	protected Guild.Registry guildRegistry;
+	
+	@Inject
+	IDiscordClient client;
 	
 	private IChannel channel;
 	
 	@Setting
 	String name;
+	
 	
 	public IChannel getDiscordChannel(){
 		return channel;
@@ -38,17 +43,31 @@ public class Channel extends Config{
 	
 	public void sendMessage(String message, Color color) throws RateLimitException, DiscordException, MissingPermissionsException{
 		boolean block = message.endsWith("```");
-		if (message.length() > 1900)
+		if (message.length() > 1900){
 			message = message.substring(0, 1900);
-		if (block) message += "```";
+			if (block) message += "```";
+		}
 
 		EmbedObject embed = new EmbedBuilder()
 			.withColor(color)
 			.withDescription(message)
 			.build();
-		channel.sendMessage("", embed, true);
+		channel.sendMessage("", embed, false);
 
-		TerraLogger.info(message);
+		IUser author = client.getOurUser();
+		IGuild guild = channel.getGuild();
+		
+		for (IUser user : channel.getUsersHere()){
+			message = message.replace("<@!" + user.getID() + ">", ConsoleColor.YELLOW  + "@" + user.getDisplayName(guild) + "<r>");
+			message = message.replace("<@" + user.getID() + ">", ConsoleColor.YELLOW  + "@" + user.getDisplayName(guild) + "<r>");
+		}
+		
+		if (channel.isPrivate()){
+			TerraLogger.info("<<l>PM<r>><<l>"+ channel.getName() +"<r>> " + message.replaceAll("%", "%%"));
+		} else {
+			TerraLogger.info("<<l>"+ guild.getName() +"<r>><<l>#"+ channel.getName() +"<r>><<l>" + author.getNicknameForGuild(guild).orElse(author.getName()) + "<r>> " + message.replaceAll("%", "%%"));
+		}
+		
 	}
 	
 	public void info(String message) throws RateLimitException, DiscordException, MissingPermissionsException{

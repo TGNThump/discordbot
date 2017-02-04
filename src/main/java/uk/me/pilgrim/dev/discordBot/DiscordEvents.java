@@ -14,6 +14,7 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.MessageUpdateEvent;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
@@ -22,6 +23,7 @@ import sx.blah.discord.handle.obj.IUser;
 import uk.me.pilgrim.dev.core.events.InitEvent;
 import uk.me.pilgrim.dev.core.foundation.GuiceModule;
 import uk.me.pilgrim.dev.core.util.Context;
+import uk.me.pilgrim.dev.discordBot.events.MessageEditedEvent;
 import uk.me.pilgrim.dev.discordBot.models.Channel;
 import uk.me.pilgrim.dev.discordBot.models.Guild;
 import uk.me.pilgrim.dev.discordBot.models.User;
@@ -78,6 +80,29 @@ public class DiscordEvents extends GuiceModule{
 		context.put(IMessage.class, message);
 		
 		uk.me.pilgrim.dev.discordBot.events.MessageReceivedEvent e = new uk.me.pilgrim.dev.discordBot.events.MessageReceivedEvent(context);
+		events.post(e);
+	}
+	
+	@EventSubscriber
+	public void onMessageUpdateEvent(MessageUpdateEvent event){
+		IMessage message = event.getOldMessage();
+		IUser author = message.getAuthor();
+		IGuild guild = message.getGuild();
+		IChannel channel = message.getChannel();
+		
+		Context context = new Context();
+		context.put(IDiscordClient.class, client);
+		context.put(IUser.class, author);
+		context.put(User.class, userRegistry.get(author));
+		if (!channel.isPrivate()){
+			context.put(IGuild.class, guild);
+			context.put(Guild.class, guildRegistry.get(guild));
+		}
+		context.put(IChannel.class, channel);
+		context.put(Channel.class, channelRegistry.get(channel));
+		context.put(IMessage.class, event.getNewMessage());
+
+		MessageEditedEvent e = new MessageEditedEvent(context, event.getOldMessage(), event.getNewMessage());
 		events.post(e);
 	}
 }

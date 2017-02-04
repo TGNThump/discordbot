@@ -18,12 +18,15 @@ public class User extends Config{
 	@Setting
 	String name;
 	
+	@Setting
+	Boolean admin;
+	
 	public IUser getDiscordUser(){
 		return user;
 	}
 	
 	public boolean hasPermission(String perm) {
-		return true;
+		return admin;
 	}
 	
 	public User(){
@@ -41,6 +44,7 @@ public class User extends Config{
 	@Override
 	public void setDefaults() {
 		if (user != null) name = user.getName();
+		admin = setDefault(admin, false);
 	}
 	
 	// Factory and Registry
