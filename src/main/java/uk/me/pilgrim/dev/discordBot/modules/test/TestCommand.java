@@ -56,7 +56,7 @@ public class TestCommand {
 	public CommandResult onPronoun(Context context, Pronoun pronoun) throws MissingPermissionsException, DiscordException, RateLimitException{
 		IGuild guild = context.get(IGuild.class);
 		User user = context.get(User.class);
-		Optional<String> currentNick = user.getDiscordUser().getNicknameForGuild(context.get(IGuild.class));
+		Optional<String> currentNick = Optional.of(user.getDiscordUser().getNicknameForGuild(context.get(IGuild.class)));
 		
 		
 		String c = "";

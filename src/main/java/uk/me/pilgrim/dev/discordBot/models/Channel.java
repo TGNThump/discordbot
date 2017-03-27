@@ -65,7 +65,7 @@ public class Channel extends Config{
 		if (channel.isPrivate()){
 			TerraLogger.info("<<l>PM<r>><<l>"+ channel.getName() +"<r>> " + message.replaceAll("%", "%%"));
 		} else {
-			TerraLogger.info("<<l>"+ guild.getName() +"<r>><<l>#"+ channel.getName() +"<r>><<l>" + author.getNicknameForGuild(guild).orElse(author.getName()) + "<r>> " + message.replaceAll("%", "%%"));
+			TerraLogger.info("<<l>"+ guild.getName() +"<r>><<l>#"+ channel.getName() +"<r>><<l>" + author.getDisplayName(guild) + "<r>> " + message.replaceAll("%", "%%"));
 		}
 		
 	}

@@ -40,7 +40,7 @@ public class MessageListener {
 		if (channel.isPrivate()){
 			TerraLogger.info("<<l>PM<r>><<l>"+ channel.getName() +"<r>> " + text.replaceAll("%", "%%"));
 		} else {
-			TerraLogger.info("<<l>"+ guild.getName() +"<r>><<l>#"+ channel.getName() +"<r>><<l>" + author.getNicknameForGuild(guild).orElse(author.getName()) + "<r>> " + text.replaceAll("%", "%%"));
+			TerraLogger.info("<<l>"+ guild.getName() +"<r>><<l>#"+ channel.getName() +"<r>><<l>" + author.getDisplayName(guild) + "<r>> " + text.replaceAll("%", "%%"));
 		}
 	}
 }
