@@ -1,5 +1,6 @@
 package uk.me.pilgrim.dev.discordBot.models;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import javax.inject.Singleton;
@@ -23,6 +24,15 @@ public class User extends Config{
 	
 	@Setting
 	String name;
+	
+	@Setting
+	Date firstSeen;
+	
+	@Setting
+	Date lastSeen;
+	
+	@Setting
+	Integer messageCount;
 	
 	public IUser getDiscordUser(){
 		return user;
@@ -69,6 +79,9 @@ public class User extends Config{
 	@Override
 	public void setDefaults() {
 		if (user != null) name = user.getName();
+		firstSeen = setDefault(firstSeen, new Date());
+		lastSeen = setDefault(lastSeen, new Date());
+		messageCount = setDefault(messageCount, 0);
 	}
 	
 	// Factory and Registry

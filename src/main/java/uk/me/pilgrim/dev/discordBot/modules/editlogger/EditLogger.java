@@ -19,5 +19,6 @@ public class EditLogger extends Module{
 	@Subscribe
 	public void onInit(InitEvent event){
 		registerEvents(new EditListener());
+		registerCommands(new EditLoggerCommands());
 	}
 }

@@ -32,6 +32,9 @@ public class Channel extends Config{
 	@Setting
 	String name;
 	
+	@Setting
+	boolean loggingEdits;
+	
 	
 	public IChannel getDiscordChannel(){
 		return channel;
@@ -39,6 +42,14 @@ public class Channel extends Config{
 	
 	public String getName() {
 		return channel.getName();
+	}
+	
+	public boolean isLoggingEdits(){
+		return loggingEdits;
+	}
+	
+	public void setLoggingEdits(boolean loggingEdits){
+		this.loggingEdits = loggingEdits;
 	}
 	
 	public void sendMessage(String message, Color color) throws RateLimitException, DiscordException, MissingPermissionsException{
@@ -93,6 +104,7 @@ public class Channel extends Config{
 	@Override
 	public void setDefaults() {
 		if (channel != null) name = channel.getName();
+		loggingEdits = setDefault(loggingEdits, false);
 	}
 	
 	// Factory and Registry

@@ -32,6 +32,10 @@ public class RoleCommands {
 		
 		List<String> roles = Lists.newArrayList();
 		for (String id : guild.getAssignableRoles()){
+			if (guild.getDiscordGuild().getRoleByID(id) == null){
+				guild.getAssignableRoles().remove(id);
+				continue;
+			}
 			roles.add(guild.getDiscordGuild().getRoleByID(id).getName());
 		}
 		

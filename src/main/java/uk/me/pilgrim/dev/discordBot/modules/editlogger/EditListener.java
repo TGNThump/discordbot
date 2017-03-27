@@ -28,6 +28,7 @@ public class EditListener {
 		if (event.getChannel().getDiscordChannel().isPrivate()) return;
 		Optional<Channel> log = event.getGuild().getLogChannel();
 		if (!log.isPresent()) return;
+		if (!event.getChannel().isLoggingEdits()) return;
 	
 		IMessage newM = event.getNew();
 		IMessage oldM = event.getOld();

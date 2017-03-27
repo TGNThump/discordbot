@@ -25,7 +25,7 @@ import uk.me.pilgrim.dev.discordBot.config.Lang;
 import uk.me.pilgrim.dev.discordBot.config.MainConfig;
 import uk.me.pilgrim.dev.discordBot.listeners.CommandListener;
 import uk.me.pilgrim.dev.discordBot.listeners.ExceptionListener;
-import uk.me.pilgrim.dev.discordBot.listeners.MessageListener;
+import uk.me.pilgrim.dev.discordBot.listeners.MessageLoggerListener;
 import uk.me.pilgrim.dev.discordBot.listeners.ReadyListener;
 import uk.me.pilgrim.dev.discordBot.models.Models;
 import uk.me.pilgrim.dev.discordBot.modules.assignableroles.AssignableRoles;
@@ -61,7 +61,7 @@ public class DiscordBot extends Project {
 	public void registerEvents(){
 		events.register(new ReadyListener());
 		events.register(new ExceptionListener());
-		events.register(new MessageListener());
+		events.register(new MessageLoggerListener());
 		events.register(new CommandListener());
 	}
 	

@@ -20,7 +20,7 @@ import uk.me.pilgrim.dev.discordBot.events.MessageReceivedEvent;
 /**
  * @author Benjamin Pilgrim &lt;ben@pilgrim.me.uk&gt;
  */
-public class MessageListener {
+public class MessageLoggerListener {
 	
 	@Subscribe
 	public void onMessageReceivedEvent(MessageReceivedEvent event) throws CommandException{
