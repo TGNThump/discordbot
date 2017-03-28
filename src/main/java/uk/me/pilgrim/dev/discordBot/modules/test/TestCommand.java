@@ -59,18 +59,7 @@ public class TestCommand {
 		Optional<String> currentNick = Optional.of(user.getDiscordUser().getNicknameForGuild(context.get(IGuild.class)));
 		
 		
-		String c = "";
-		switch(pronoun){
-			case HE:
-				c = "♂";
-				break;
-			case SHE:
-				c = "♀";
-				break;
-			case THEY:
-				c = "⚥";
-				break;
-		}
+		String c = pronoun.getUnicode();
 		
 		if (currentNick.isPresent()){
 			String nick = currentNick.get();

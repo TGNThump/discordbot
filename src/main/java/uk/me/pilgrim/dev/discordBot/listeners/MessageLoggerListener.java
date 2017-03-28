@@ -32,6 +32,7 @@ public class MessageLoggerListener {
 		if (author.isBot()) return;
 		
 		for (IUser user : message.getMentions()){
+			if (user == null) continue;
 			String displayName = message.getChannel().isPrivate() ? user.getDisplayName(message.getGuild()) : user.getName();
 			
 			text = text.replace("<@!" + user.getID() + ">", ConsoleColor.YELLOW  + "@" + displayName + "<r>");

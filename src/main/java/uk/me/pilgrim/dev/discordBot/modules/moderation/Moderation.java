@@ -6,11 +6,19 @@
  */
 package uk.me.pilgrim.dev.discordBot.modules.moderation;
 
+import com.google.common.eventbus.Subscribe;
+
+import uk.me.pilgrim.dev.core.events.InitEvent;
 import uk.me.pilgrim.dev.core.foundation.Module;
 
 /**
  * @author Benjamin Pilgrim &lt;ben@pilgrim.me.uk&gt;
  */
 public class Moderation extends Module{
+	
+	@Subscribe
+	public void onInit(InitEvent event){
+		registerCommands(new ModerationCommands());
+	}
 	
 }
