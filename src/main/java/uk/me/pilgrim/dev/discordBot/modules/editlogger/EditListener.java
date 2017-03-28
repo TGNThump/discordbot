@@ -25,7 +25,7 @@ public class EditListener {
 	@Subscribe
 	public void onMesssageEditEvent(MessageEditedEvent event) throws RateLimitException, DiscordException, MissingPermissionsException{
 		if (event.getAuthor().getDiscordUser().isBot()) return;
-		if (event.getChannel().getDiscordChannel().isPrivate()) return;
+		if (event.isPrivate()) return;
 		Optional<Channel> log = event.getGuild().getLogChannel();
 		if (!log.isPresent()) return;
 		if (!event.getChannel().isLoggingEdits()) return;

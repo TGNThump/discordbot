@@ -11,7 +11,15 @@ package uk.me.pilgrim.dev.discordBot.modules.test;
  * @author Benjamin Pilgrim &lt;ben@pilgrim.me.uk&gt;
  */
 public enum Pronoun {
-	HE,
-	SHE,
-	THEY
+	HE("he","him","his"),
+	SHE("she","her","hers"),
+	THEY("they","them","theirs");
+	
+	private final String subject, object, possessive;
+	
+	Pronoun(String subject, String object, String possessive){
+		this.subject = subject;
+		this.object = object;
+		this.possessive = possessive;
+	}
 }

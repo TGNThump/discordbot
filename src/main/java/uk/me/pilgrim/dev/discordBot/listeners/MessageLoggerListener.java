@@ -26,20 +26,22 @@ public class MessageLoggerListener {
 	public void onMessageReceivedEvent(MessageReceivedEvent event) throws CommandException{
 		IMessage message = event.getMessage();
 		IUser author = event.getAuthor().getDiscordUser();
-		IGuild guild = event.getGuild().getDiscordGuild();
 		IChannel channel = event.getChannel().getDiscordChannel();
 		String text = event.getContent();
 
 		if (author.isBot()) return;
 		
 		for (IUser user : message.getMentions()){
-			text = text.replace("<@!" + user.getID() + ">", ConsoleColor.YELLOW  + "@" + user.getDisplayName(message.getGuild()) + "<r>");
-			text = text.replace("<@" + user.getID() + ">", ConsoleColor.YELLOW  + "@" + user.getDisplayName(message.getGuild()) + "<r>");
+			String displayName = message.getChannel().isPrivate() ? user.getDisplayName(message.getGuild()) : user.getName();
+			
+			text = text.replace("<@!" + user.getID() + ">", ConsoleColor.YELLOW  + "@" + displayName + "<r>");
+			text = text.replace("<@" + user.getID() + ">", ConsoleColor.YELLOW  + "@" + displayName + "<r>");
 		}
 		
 		if (channel.isPrivate()){
 			TerraLogger.info("<<l>PM<r>><<l>"+ channel.getName() +"<r>> " + text.replaceAll("%", "%%"));
 		} else {
+			IGuild guild = event.getGuild().getDiscordGuild();	
 			TerraLogger.info("<<l>"+ guild.getName() +"<r>><<l>#"+ channel.getName() +"<r>><<l>" + author.getDisplayName(guild) + "<r>> " + text.replaceAll("%", "%%"));
 		}
 	}

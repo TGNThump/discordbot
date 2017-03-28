@@ -14,6 +14,10 @@ public class MessageEvent{
 		this.context = context;
 	}
 	
+	public boolean isPrivate(){
+		return getChannel().getDiscordChannel().isPrivate();
+	}
+	
 	public Context getContext(){
 		return context;
 	}
